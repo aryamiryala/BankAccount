@@ -1,0 +1,291 @@
+ 
+public class Account{
+    //Instance Variables
+    private String name;
+    private int accountNumber = 10000000;
+    private double balance;
+    private String[] transactions;
+    //Non-Instance Variable
+    private static int numOfAccounts = 0;
+    //Constructors
+    public Account(){
+        name = "";
+        balance = 0;
+        accountNumber+=numOfAccounts;
+        numOfAccounts++;
+        transactions  = null;
+        if(numOfAccounts % 100 == 0)
+            balance+=100;
+    }
+    public Account(String n, double bal){
+        name = n;
+        balance = bal;
+        accountNumber+=numOfAccounts;
+        numOfAccounts++;
+        transactions = null;
+        if(numOfAccounts % 100 == 0)
+            balance+=100;
+    }
+    //toString, deposit, withdraw
+    public String toString(){
+        return "Name: " + name + ", Acct: " + accountNumber + ", Balance: $" +
+        balance;
+    }
+    public void deposit(double amt){
+        //transactions[numOfAccounts] = "deposit " + amt;
+        addTransaction("deposit", amt);
+        balance+=amt;
+    }
+    public double withdraw(double amt){
+        //transactions[numOfAccounts] = "withdraw " + amt;
+        addTransaction("withdraw", amt);
+        balance-=amt;
+        return amt;
+    }
+    //addTransaction
+    private void addTransaction(String wOrD, double amt){
+        String[] storage;
+        if(transactions == null)
+            transactions = new String[1];
+        else{
+            storage = transactions;
+            transactions = new String[transactions.length-1];
+            for(int i = 0; i < storage.length; i++)
+                transactions[i] = storage[i];
+        }
+        transactions[transactions.length-1] = wOrD + " " + amt;
+    }
+    //getters/setters
+    public String getName(){
+        return name;
+    }
+    public void setName(String a){
+        name = a;
+    }
+    public int getAcctNum(){
+        return accountNumber;
+    }
+    public double getBalance(){
+        return balance;
+    }
+    public String[] getTrans(){
+        return transactions;
+    }
+    public int getNumOfAcct(){
+        return numOfAccounts;
+    }
+}
+
+import java.util.Scanner;
+public class Main{
+    public static void main(){
+        String a = "", c = "";
+        double b = 0;
+        Scanner choice = new Scanner(System.in);
+        Account[] accounts = null;
+        for(int i = 0; i < 1;){
+             System.out.print("Type the number corresponding to your choice:\n1. Create new account\n2. Deposit/Pay\n3. Withdraw/Charge\n4. Print report of all accounts\n5. Print all transactions\n6. Apply interest\n7. Deposit 20 times\n9. Exit\n ");
+             a = choice.next();             
+             if(a.compareTo("1") == 0){
+                 System.out.print("What type of account would you like to create?\n1. Checking Account\n2. Savings Account\n3. Credit Card Account\n ");
+                 a = choice.next();
+                 Account str[];
+                 if(accounts == null)
+                    accounts = new Account[1];
+                 else{
+                    str = accounts;
+                    accounts = new Account[accounts.length + 1];
+                    for(int j = 0; j < str.length; j++)
+                        accounts[j] = str[j];
+                 }
+                 if(a.compareTo("1") == 0){
+                    accounts[accounts.length - 1] = new CheckingAccount();
+                 }
+                 if(a.compareTo("2") == 0){                    
+                    accounts[accounts.length - 1] = new SavingsAccount();
+                    ((SavingsAccount)(accounts[accounts.length - 1])).setIntRate(.09);
+                 }
+                 if(a.compareTo("3") == 0){                   
+                    accounts[accounts.length - 1] = new CreditCardAccount();
+                    ((CreditCardAccount)(accounts[accounts.length - 1])).setIntRate(19.02);
+                 }
+                 System.out.print("What is the name of the account?\n ");
+                 accounts[accounts.length - 1].setName(choice.next());                 
+                 System.out.println("The following account has been created:\n" + accounts[accounts.length-1].toString());
+                 System.out.println();
+                 a = "";
+             } 
+             if(a.compareTo("2") == 0){
+                 System.out.print("What is your account number?\n ");
+                 a = choice.next();
+                 System.out.print("Would you like to deposit or pay money?\n ");
+                 c = choice.next();
+                 if(c.toLowerCase().compareTo("deposit") == 0){
+                     System.out.print("How much money would you like to deposit?\n ");
+                     b = Double.parseDouble(choice.next());
+                     accounts[(int)(Double.parseDouble(a)) % 1000000].deposit(b);
+                     System.out.println("You have deposited $" + b + ":\n" + accounts[(int)(Double.parseDouble(a)) % 1000000].toString());              
+                 }
+                 if(c.toLowerCase().compareTo("pay") == 0){
+                     System.out.print("How much money would you like to pay?\n ");
+                     b = Double.parseDouble(choice.next());
+                     ((CreditCardAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).pay(b);
+                     System.out.println("You have paid $" + b
+                     + ":\n" + accounts[(int)(Double.parseDouble(a)) % 1000000].toString());
+                 }           
+                 System.out.println();
+             }
+             if(a.compareTo("3") == 0){
+                 System.out.print("What is your account number?\n ");
+                 a = choice.next();
+                 System.out.print("Would you like to withdraw or charge money?\n ");
+                 c = choice.next();
+                 if(c.toLowerCase().compareTo("withdraw") == 0){
+                     System.out.print("How much money would you like to withdraw?\n ");
+                     b = Double.parseDouble(choice.next());
+                     accounts[(int)(Double.parseDouble(a)) % 1000000].withdraw(b);
+                     System.out.println("You have withdrawn $" + b + ":\n" + accounts[(int)(Double.parseDouble(a)) % 1000000].toString());              
+                 }
+                 if(c.toLowerCase().compareTo("charge") == 0){
+                     System.out.print("How much money would you like to charge?\n ");
+                     b = Double.parseDouble(choice.next());
+                     ((CreditCardAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).charge(b);
+                     System.out.println("You have charged $" + b + ":\n" + accounts[(int)(Double.parseDouble(a)) % 1000000].toString());
+                 } 
+                 System.out.println();
+             }
+             if(a.compareTo("4") == 0){
+                 for(int j = 0; j < accounts.length; j++)
+                     System.out.println(accounts[j].toString());
+                 System.out.println();
+             }
+             if(a.compareTo("5") == 0){
+                 for(int j = 0; j < accounts.length; j++){
+                     System.out.println("Account " + accounts[j].getAcctNum() + ":");
+                     System.out.println(accounts[j].getTrans());
+                 }
+                 System.out.println();
+             }
+             if(a.compareTo("6") == 0){
+                 double finalInterest = 0;
+                 System.out.print("What is your account number?\n ");
+                 a = choice.next();
+                 System.out.print("What type of account is it?\n1. Savings Account\n2. Credit Card Account\n ");
+                 c = choice.next();
+                 System.out.print("How many months worth of interest would you like to apply?\n ");
+                 b = Double.parseDouble(choice.next());
+                 if(c.compareTo("1") == 0){
+                    for(int j = 0; j < b; j++){
+                        finalInterest += ((SavingsAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).getBalance() * (((SavingsAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).getIntRate() / 12);
+                        ((SavingsAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).applyInterest();                       
+                    }
+                    System.out.println("You have been given $" + finalInterest + " worth of interest");
+                 }
+                 if(c.compareTo("2") == 0){
+                    for(int j = 0; j < b; j++){
+                        finalInterest += ((CreditCardAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).getBalance() * (((CreditCardAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).getIntRate() / 12);
+                        ((CreditCardAccount)(accounts[(int)(Double.parseDouble(a)) % 1000000])).chargeInterest();
+                    }
+                    System.out.println("You have been charged $" + finalInterest + " worth of interest");
+                 }
+                 System.out.println();
+             }             
+             if(a.compareTo("7") == 0){
+                 for(int j = 0; j < accounts.length; j++)
+                    for(int k = 1; k < 21; k++)
+                        accounts[j].deposit(k);
+                 System.out.println();
+             }
+             if(a.compareTo("9") == 0){
+                 i++;
+             }
+        }
+    }
+}
+
+public class SavingsAccount extends Account{
+    //Instance Variable
+    private double interestRate;
+    //Constructors
+    public SavingsAccount(){
+        interestRate = 0;
+    }
+    public SavingsAccount(String name, double balance, double rate){
+        super(name, balance);
+        interestRate = rate;
+    }
+    //getters/setters
+    public double getIntRate(){
+        return interestRate;
+    }
+    public void setIntRate(double a){
+        interestRate = a;
+    }
+    //applyInterest and toString
+    public void applyInterest(){
+        deposit(getBalance() * (interestRate/12));
+    }
+    public String toString(){
+        return super.toString() + ", Interest: " + interestRate + "%";
+    }
+}
+
+public class CreditCardAccount extends Account{
+    //Instance Variables
+    private double interestRate;
+    private String description;
+    //Constructors
+    public CreditCardAccount(){
+        interestRate = 0;
+        description = "Visa";
+    }
+    public CreditCardAccount(String name, double balance, double rate, String des){
+        super(name, balance);
+        interestRate = rate;
+        description = des;
+    }
+    //chargeInterest and toString
+    public void chargeInterest(){
+        withdraw(getBalance() * (interestRate/12));
+    }
+    public String toString(){
+        return "Name: " + getName() + ", " + getDes() + "Acct: " + getAcctNum() +
+        ", Balance: $" + getBalance() + ", Interest: " + getIntRate() + "%";
+    }
+    //getters/setters
+    public double getIntRate(){
+        return interestRate;
+    }
+    public String getDes(){
+        return description;
+    }
+    public void setDes(String a){
+        description = a;
+    }
+    public void setIntRate(double a){
+        interestRate = a;
+    }
+    //charge and pay
+    public void charge(double a){
+        withdraw(a);
+    }
+    public void pay(double a){
+        deposit(a);
+    }
+}
+
+public class CheckingAccount extends Account{
+    public CheckingAccount(){
+        super();
+    }
+    public CheckingAccount(String name, double balance){
+        super(name, balance);
+    }
+    public String toString(){
+        return "Name: " + this.getName() + ", Checking Acct: " + this.getAcctNum() +
+        ", Balance: $" + this.getBalance();
+    }
+}
+
+ 
+
